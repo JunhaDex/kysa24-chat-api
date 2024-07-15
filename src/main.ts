@@ -1,15 +1,22 @@
 import 'dotenv/config'
-import fastify from 'fastify'
+import fastify, { FastifyRequest } from 'fastify'
 import ws from '@fastify/websocket'
 import jwt from '@fastify/jwt'
 import { AppDataSource } from '@/data-source'
+import routes from '@/routes/index.route'
+import heartbeat from '@/plugins/heartbeat.plugin'
 
-// Initialize & Plugins
+// Initialize & Plugins & Routes
 const server = fastify()
 server.register(ws)
-server.register(jwt, {secret: process.env.JWT_SECRET_HASH})
+server.register(jwt, { secret: process.env.JWT_SECRET_HASH })
+server.register(routes)
+server.register(heartbeat)
 
-// Routers
+server.addHook('preHandler', (request: FastifyRequest, reply: any, next) => {
+  request.jwt = server.jwt
+  return next()
+})
 
 server.get('/healthz', (request, reply) => {
   return reply.send({ message: 'healthy!' })
