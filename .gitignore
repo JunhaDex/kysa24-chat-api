@@ -1,0 +1,39 @@
+# compiled output
+/dist
+/node_modules
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+
+# Tests
+/tests
+
+# IDEs and editors
+.idea
+.vscode
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# dotenv environment variable files
+.env
+*.env
+!.env.example
+secret
+
+# temp directory
+.temp
+.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock

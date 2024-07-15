@@ -1,0 +1,38 @@
+{
+  "name": "kysa24-chat-api",
+  "version": "0.0.1",
+  "description": "Awesome project developed with TypeORM.",
+  "main": "src/main.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.8.0",
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^20.12.12",
+    "@types/uuid": "^9.0.8",
+    "@types/ws": "^8.5.10",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "ts-node": "10.9.1",
+    "tsc-alias": "^1.8.10",
+    "typescript": "~5.4.0",
+    "typescript-eslint": "^7.10.0"
+  },
+  "dependencies": {
+    "@fastify/jwt": "^8.0.1",
+    "@fastify/websocket": "^10.0.1",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "mysql2": "^3.10.2",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "0.3.20",
+    "uuid": "^10.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc-alias",
+    "start": "node dist/main.js",
+    "dev": "node dist/main.js --watch"
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+}
