@@ -1,0 +1,15 @@
+GET {{host}}/api/v1/chat
+Content-Type: application/json
+Authorization: Bearer {{auth}}
+
+### socket test
+WEBSOCKET {{ws}}/api/v1/chat/d88d395a-6cfb-4ebf-b07d-b2a510b1f066
+Content-Type: application/json
+Authorization: Bearer {{auth}}
+
+=== wait-for-server
+{
+  "message": "안녕하세요. 소통해요!",
+  "encoded": false
+}
+

@@ -2,16 +2,21 @@ import 'dotenv/config'
 import fastify, { FastifyRequest } from 'fastify'
 import ws from '@fastify/websocket'
 import jwt from '@fastify/jwt'
-import { AppDataSource } from '@/data-source'
+import rds from '@fastify/redis'
+import { AppDataSource, RedisSource } from '@/data-source'
 import routes from '@/routes/index.route'
-import heartbeat from '@/plugins/heartbeat.plugin'
+import { addHeartbeat, subscribeLiveChat } from '@/plugins/wss.plugin'
 
 // Initialize & Plugins & Routes
-const server = fastify()
+const server = fastify({ logger: true })
 server.register(ws)
 server.register(jwt, { secret: process.env.JWT_SECRET_HASH })
+server
+  .register(rds, { ...RedisSource, namespace: 'publisher' })
+  .register(rds, { ...RedisSource, namespace: 'subscriber' })
 server.register(routes)
-server.register(heartbeat)
+server.register(addHeartbeat)
+server.register(subscribeLiveChat)
 
 server.addHook('preHandler', (request: FastifyRequest, reply: any, next) => {
   request.jwt = server.jwt
@@ -30,7 +35,9 @@ AppDataSource.initialize()
         console.error(err)
         process.exit(1)
       }
-      console.log(`Server listening at ${address}`)
+      server.log.info(`Server listening at ${address}`)
+      server.log.info(`Timezone: ${process.env.TZ}`)
+      server.log.info(`Server started at ${new Date().toString()}`)
     })
   })
   .catch((err) => console.error(err))

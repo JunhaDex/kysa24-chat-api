@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { formatResponse } from '@/utils/index.util'
-import { AppDataSource } from '@/data-source'
+import { UserService } from '@/resources/user.service'
 
 export async function authUser(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const [type, token] = request.headers['authorization']?.split(' ') ?? []
@@ -9,8 +9,8 @@ export async function authUser(request: FastifyRequest, reply: FastifyReply): Pr
       const decoded = request.jwt.verify(token)
       if (decoded) {
         const ref = (decoded as any).sub
-        const userRepo = AppDataSource.getRepository('User')
-        const user = await userRepo.findOneBy({ ref })
+        const userSvc = new UserService()
+        const user = await userSvc.findUserByRef(ref)
         if (user) {
           request.user = user
         }

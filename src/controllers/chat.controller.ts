@@ -1,23 +1,45 @@
 import { WebSocket } from '@fastify/websocket'
-import { SocketMessage } from '@/types/general.type'
 import { ChatService } from '@/resources/chat.service'
 import { formatResponse } from '@/utils/index.util'
+import { FastifyReply, FastifyRequest } from 'fastify'
+import { User } from '@/entity/User'
+import { FastifyRedis } from '@fastify/redis'
+import { UserService } from '@/resources/user.service'
 
-export async function handleConnection(socket: WebSocket, req: any) {
-  const chatSvc = new ChatService()
-  // attach health checker & socket id
-  socket.on('connection', async (soc) => {})
-  // open connection
-  socket.on('message', async (raw: any) => {
-    const message: SocketMessage = {
-      from: req.user.id,
-      roomRef: req.params.ref,
-      payload: raw
+export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
+  const redis = req.server.redis.publisher as FastifyRedis
+  const chatSvc = new ChatService(redis)
+  const userSvc = new UserService()
+  // first connection
+  if (socket.id === undefined) {
+    socket.id = (req.user as User).ref
+    socket.send(JSON.stringify(formatResponse(200, 'Connection established')))
+  }
+  // heartbeat
+  socket.on('pong', () => {
+    socket.isAlive = true
+  })
+  // handle message
+  socket.on('message', async (raw: { message: string; encoded: boolean }) => {
+    // init request data
+    const sender = req.user as User
+    const receiver = await userSvc.findUserByRef((req.params as any).ref)
+    if (!receiver) {
+      socket.send(JSON.stringify(formatResponse(404, 'User not found')))
+      socket.close()
     }
+    const room = await chatSvc.getOrGenRoom(sender.id, receiver.id)
     // add member to chat room - redis
     try {
-      const res = await chatSvc.saveMessage(message)
-      // broadcast to the room, find client by socket
+      const res = await chatSvc.saveMessage({
+        from: sender.id,
+        roomRef: room.ref,
+        payload: JSON.parse(raw.toString())
+      })
+      await chatSvc.publishMessage({
+        recipients: [receiver.ref],
+        chat: res
+      })
     } catch (e: any) {
       console.error(e.message)
       if (e.message === ChatService.CHAT_SERVICE_EXCEPTIONS.ROOM_NOT_FOUND) {
@@ -28,6 +50,11 @@ export async function handleConnection(socket: WebSocket, req: any) {
       socket.close()
     }
   })
-  // close broken connection
-  socket.on('close', async (soc) => {})
+  // graceful close
+  socket.on('close', async () => {
+    console.log('connection closed, user ref: ', (req.user as User).ref)
+    await chatSvc.popOnline({ roomRef: (req.params as any).ref, socketId: socket.id })
+  })
 }
+
+export async function createRoomIfNotExist(req: FastifyRequest, res: FastifyReply) {}

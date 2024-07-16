@@ -1,3 +1,5 @@
+import { Chat } from '@/entity/Chat'
+
 export interface ApiResponse {
   code: number
   message: string
@@ -11,4 +13,9 @@ export interface SocketMessage {
     message: string
     encoded: boolean
   }
+}
+
+export interface PublishPayload {
+  recipients: string[]
+  chat: Chat
 }
