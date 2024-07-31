@@ -8,6 +8,7 @@ declare module 'fastify' {
 
   export interface FastifyInstance {
     authUser: any
+    authUserSocket: any
     redis: {
       publisher: FastifyRedis
       subscriber: FastifyRedis
