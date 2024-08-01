@@ -23,12 +23,8 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
   socket.on('message', async (raw: { message: string; encoded: boolean }) => {
     // init request data
     const sender = req.user as User
-    const receiver = await userSvc.findUserByRef((req.params as any).ref)
-    if (!receiver) {
-      socket.send(JSON.stringify(formatResponse(404, 'User not found')))
-      socket.close()
-    }
-    const room = await chatSvc.getOrGenRoom(sender.id, receiver.id)
+    const room = await chatSvc.getRoomByRef((req.params as any).ref)
+    const receiver = await userSvc.findUsers(room.members)
     // add member to chat room - redis
     try {
       const res = await chatSvc.saveMessage({
@@ -36,10 +32,12 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
         roomRef: room.ref,
         payload: JSON.parse(raw.toString())
       })
-      await chatSvc.publishMessage({
-        recipients: [receiver.ref],
-        chat: res
-      })
+      for (const rec of receiver) {
+        await chatSvc.publishMessage({
+          recipients: [rec.ref],
+          chat: res
+        })
+      }
     } catch (e: any) {
       console.error(e.message)
       if (e.message === ChatService.CHAT_SERVICE_EXCEPTIONS.ROOM_NOT_FOUND) {

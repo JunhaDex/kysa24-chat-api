@@ -41,6 +41,10 @@ export class ChatService {
     throw new Error(this.Exception.ROOM_NOT_FOUND)
   }
 
+  async getRoomByRef(ref: string): Promise<ChatRoom> {
+    return await this.roomRepo.findOneBy({ ref })
+  }
+
   async getOrGenRoom(sender: number, receiver: number): Promise<ChatRoom> {
     const senderExist = await this.userRepo.findOneBy({ id: sender })
     const receiverExist = await this.userRepo.findOneBy({ id: receiver })

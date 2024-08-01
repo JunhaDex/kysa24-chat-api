@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 import { User } from '@/entity/User'
 import { AppDataSource } from '@/data-source'
 
@@ -11,5 +11,9 @@ export class UserService {
 
   async findUserByRef(ref: string): Promise<User> {
     return await this.userRepo.findOneBy({ ref })
+  }
+
+  async findUsers(ids: number[]): Promise<User[]> {
+    return await this.userRepo.findBy({ id: In(ids) })
   }
 }
