@@ -8,7 +8,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
-  host: process.env.MYSQL_HOST,
+  host: process.env.DB_MYSQL_HOST,
   port: Number(process.env.DB_MYSQL_PORT),
   username: process.env.DB_MYSQL_USERNAME,
   password: process.env.DB_MYSQL_PASSWORD,
