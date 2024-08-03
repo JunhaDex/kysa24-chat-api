@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import fastify, { FastifyRequest } from 'fastify'
+import cors from '@fastify/cors'
 import ws from '@fastify/websocket'
 import jwt from '@fastify/jwt'
 import rds from '@fastify/redis'
@@ -9,6 +10,10 @@ import { addHeartbeat, subscribeLiveChat } from '@/plugins/wss.plugin'
 
 // Initialize & Plugins & Routes
 const server = fastify({ logger: true })
+server.register(cors, {
+  origin: '*',
+  credentials: true
+})
 server.register(ws)
 server.register(jwt, { secret: process.env.JWT_SECRET_HASH })
 server

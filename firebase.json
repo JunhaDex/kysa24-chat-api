@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "target": "chat-api",
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "kysa24-chat-api",
+          "region": "asia-northeast3"
+        }
+      }
+    ]
+  }
+}

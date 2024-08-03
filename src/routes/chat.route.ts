@@ -3,7 +3,7 @@ import { createRoomIfNotExist, handleConnection } from '@/controllers/chat.contr
 
 export default function (fastify: FastifyInstance, opts, done) {
   /**
-   * @param ref: recipient ref (user)
+   * @param ref: recipient ref (room)
    */
   fastify.get('/:ref', { websocket: true, preHandler: [fastify.authUserSocket] }, handleConnection)
 
