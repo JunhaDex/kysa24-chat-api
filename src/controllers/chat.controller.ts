@@ -14,6 +14,7 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
   if (socket.id === undefined) {
     socket.id = (req.user as User).ref
     socket.send(JSON.stringify(formatResponse(200, 'Connection established')))
+    await chatSvc.pushOnline({ roomRef: (req.params as any).ref, socketId: socket.id })
   }
   // heartbeat
   socket.on('pong', () => {
@@ -32,12 +33,14 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
         roomRef: room.ref,
         payload: JSON.parse(raw.toString())
       })
-      for (const rec of receiver) {
-        await chatSvc.publishMessage({
-          recipients: [rec.ref],
+      await chatSvc.publishMessage(
+        {
+          recipients: receiver.map((u) => u.ref),
+          roomRef: room.ref,
           chat: res
-        })
-      }
+        },
+        receiver.filter((u) => u.id !== sender.id)
+      )
     } catch (e: any) {
       console.error(e.message)
       if (e.message === ChatService.CHAT_SERVICE_EXCEPTIONS.ROOM_NOT_FOUND) {
@@ -50,7 +53,6 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
   })
   // graceful close
   socket.on('close', async () => {
-    console.log('connection closed, user ref: ', (req.user as User).ref)
     await chatSvc.popOnline({ roomRef: (req.params as any).ref, socketId: socket.id })
   })
 }

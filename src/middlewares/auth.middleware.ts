@@ -21,7 +21,6 @@ export async function authUser(request: FastifyRequest, reply: FastifyReply): Pr
 
 export async function authUserSocket(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const token = request.headers['sec-websocket-protocol']
-  console.log('authenticate socket connection', token)
   if (token) {
     try {
       const user = await verifyToken(request, token)

@@ -21,6 +21,7 @@ export function addHeartbeat(fastify: FastifyInstance, opts, done) {
 
 export function subscribeLiveChat(fastify: FastifyInstance, opts, done) {
   const redis = fastify.redis.subscriber as FastifyRedis
+  const rCli = fastify.redis.publisher as FastifyRedis
   const wss = fastify.websocketServer
   redis.subscribe('live-chat', (err) => {
     if (err) {
@@ -31,10 +32,11 @@ export function subscribeLiveChat(fastify: FastifyInstance, opts, done) {
       fastify.log.info('Subscribed to live-chat channel')
     }
   })
-  redis.on('message', (channel, message) => {
+  redis.on('message', async (channel, message) => {
     const decoded = JSON.parse(message) as any
+    const online = await rCli.smembers(decoded.roomRef)
     for (const socket of wss.clients as Set<WebSocket>) {
-      if (decoded.recipients.includes(socket.id) && socket.readyState === 1) {
+      if (online.includes(socket.id) && socket.readyState === 1) {
         socket.send(JSON.stringify(decoded.chat))
       }
     }

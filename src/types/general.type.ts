@@ -17,5 +17,6 @@ export interface SocketMessage {
 
 export interface PublishPayload {
   recipients: string[]
+  roomRef: string
   chat: Chat
 }
