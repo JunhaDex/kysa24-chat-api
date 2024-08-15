@@ -37,6 +37,7 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
         {
           recipients: receiver.map((u) => u.ref),
           roomRef: room.ref,
+          sender,
           chat: res
         },
         receiver.filter((u) => u.id !== sender.id)

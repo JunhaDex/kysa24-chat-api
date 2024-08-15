@@ -1,4 +1,5 @@
 import { Chat } from '@/entity/Chat'
+import { User } from '@/entity/User'
 
 export interface ApiResponse {
   code: number
@@ -18,5 +19,6 @@ export interface SocketMessage {
 export interface PublishPayload {
   recipients: string[]
   roomRef: string
+  sender: User
   chat: Chat
 }

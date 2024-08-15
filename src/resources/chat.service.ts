@@ -125,7 +125,13 @@ export class ChatService {
           devices.map(
             async (d) =>
               await sendTargetDevice(d.fcm, fbt.token, {
-                roomRef: payload.roomRef
+                title: payload.sender.nickname,
+                message: payload.chat.encoded
+                  ? '새로운 메세지가 도착했습니다.'
+                  : payload.chat.message,
+                clickUrl: `/chat/${payload.roomRef}`,
+                roomRef: payload.roomRef,
+                fromRef: user.ref
               }).catch((e) => console.error(e))
           )
         )
