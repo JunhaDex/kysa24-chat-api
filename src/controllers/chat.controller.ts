@@ -10,9 +10,11 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
   const redis = req.server.redis.publisher as FastifyRedis
   const chatSvc = new ChatService(redis)
   const userSvc = new UserService()
+  console.log(':::::: found!', socket.id)
   // first connection
   if (socket.id === undefined) {
     socket.id = (req.user as User).ref
+    console.log(':::::: id set:', socket.id)
     socket.send(JSON.stringify(formatResponse(200, 'Connection established')))
     await chatSvc.pushOnline({ roomRef: (req.params as any).ref, socketId: socket.id })
   }

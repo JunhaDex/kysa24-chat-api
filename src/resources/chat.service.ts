@@ -105,6 +105,7 @@ export class ChatService {
   }
 
   async pushOnline(params: { roomRef: string; socketId: string }) {
+    console.log('pushOnline', params.roomRef, params.socketId)
     await this.redisConn.sadd(params.roomRef, params.socketId)
   }
 

@@ -9,7 +9,7 @@ import routes from '@/routes/index.route'
 import { addHeartbeat, subscribeLiveChat } from '@/plugins/wss.plugin'
 
 // Initialize & Plugins & Routes
-const server = fastify({ logger: true })
+const server = fastify({ logger: true, pluginTimeout: 30000 })
 server.register(cors, {
   origin: '*',
   credentials: true
