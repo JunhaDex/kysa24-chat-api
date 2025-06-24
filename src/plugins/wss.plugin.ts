@@ -7,6 +7,7 @@ export function addHeartbeat(fastify: FastifyInstance, opts, done) {
   const interval = setInterval(() => {
     fastify.log.info('Ping all clients...')
     for (const client of wss.clients as Set<WebSocket>) {
+      console.log(':::::: Ping Client')
       client.isAlive = false
       client.ping()
     }
