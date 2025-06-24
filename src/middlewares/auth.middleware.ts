@@ -26,6 +26,7 @@ export async function authUserSocket(request: FastifyRequest, reply: FastifyRepl
       const user = await verifyToken(request, token)
       if (user) {
         request.user = user
+        console.log(':::::: done!')
         return
       }
     } catch (error) {
