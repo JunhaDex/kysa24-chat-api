@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_MYSQL_DATABASE,
   namingStrategy: new SnakeNamingStrategy(),
   synchronize: false,
-  logging: true,
+  logging: false,
   entities: [User, UserDevice, StatusUserAct, Team, Chat, ChatRoom, ChatRoomView]
 })
 
