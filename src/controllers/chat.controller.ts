@@ -18,7 +18,6 @@ export async function handleConnection(socket: WebSocket, req: FastifyRequest) {
   }
   // heartbeat
   socket.on('pong', () => {
-    console.log(':::::: Alive!')
     socket.isAlive = true
   })
   // handle message
